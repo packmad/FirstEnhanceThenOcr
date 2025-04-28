@@ -1,3 +1,6 @@
+# Model
+model/RealESRGAN_x2plus.pth
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

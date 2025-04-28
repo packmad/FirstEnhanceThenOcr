@@ -7,12 +7,14 @@ Licence: MIT
 
 import argparse, hashlib, json, logging, os, sys, time
 from pathlib import Path
+from os.path import isfile, join
 
 import cv2
 import numpy as np
 import pytesseract
 from PIL import Image
-from realesrgan import RealESRGAN
+from realesrgan import RealESRGANer
+from basicsr.archs.rrdbnet_arch import RRDBNet
 
 
 # ------------------------ Helper Functions -----------------------------------
@@ -125,8 +127,18 @@ def main() -> None:
 
     # ------------- 4. Optional Super-resolution -----------------------------
     logging.info("Applying Real-ESRGAN ×2")
-    model = RealESRGAN(scale=2, device="cpu")
-    sr_img = model.predict(Image.fromarray(cv2.cvtColor(sharp, cv2.COLOR_GRAY2RGB)))
+    model_opt = RRDBNet(
+        num_in_ch=3,
+        num_out_ch=3,
+        num_feat=64,
+        num_block=23,
+        num_grow_ch=32,
+        scale=2  # Set to 4 for 4× upscaling
+    )
+    model_path = join('model', 'RealESRGAN_x2plus.pth')
+    assert isfile(model_path)
+    model = RealESRGANer(scale=2, device="cpu", model_path=model_path, model=model_opt)
+    sr_img, _ = model.enhance(cv2.cvtColor(sharp, cv2.COLOR_GRAY2BGR))
     sharp = cv2.cvtColor(np.array(sr_img), cv2.COLOR_RGB2GRAY)
     save_step(sharp, "02_super_res", out_dir)
 
