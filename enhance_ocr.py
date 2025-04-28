@@ -15,7 +15,8 @@ from PIL import Image
 from realesrgan import RealESRGAN
 
 
-# ------------------------ helper functions -----------------------------------
+# ------------------------ Helper Functions -----------------------------------
+
 def sha256sum(fp: Path, buf_size: int = 1 << 20) -> str:
     """Return SHA-256 hash of a file."""
     h = hashlib.sha256()
